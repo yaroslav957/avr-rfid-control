@@ -1,0 +1,7 @@
+-target
+avr
+-mmcu=atmega2560
+-isystem
+/usr/avr/include
+-D__AVR_ATmega2560__
+-Os
