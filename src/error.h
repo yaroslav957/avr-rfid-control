@@ -4,8 +4,9 @@
 typedef enum {
     ERR_NONE = 0,
     ERR_GENERIC = -1,
-    ERR_NULLPTR = -2,
-    ERR_SMALLBUF = -3
+    ERR_NULL_PTR = -2,
+    ERR_SMALLBUF = -3,
+    ERR_NOTFOUND = -4,
 } __attribute__((packed)) error_t;
 
 const char *err_name(error_t err_code);

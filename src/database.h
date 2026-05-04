@@ -5,6 +5,7 @@
 
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
+#include <blake2s/blake2s.h>
 
 #include <stdint.h>
 
@@ -13,22 +14,20 @@
 #define INIT_USERS 5
 #define MAX_USERS 16
 
-#define ID_DATA_LEN 10
+#define HASH_LEN 32
 #define NAME_DATA_LEN 12
-
-#define ID_LEN (ID_DATA_LEN + 1)
 #define NAME_LEN (NAME_DATA_LEN + 1)
 
 typedef const uint8_t *EEP_BYTE_P;
 typedef const void *EEP_VOID_P;
 
 typedef struct {
-    char id[ID_LEN];
+    uint8_t hash_id[HASH_LEN];
     char name[NAME_LEN];
 } User;
 
 void eeprom_db_init(void);
-error_t find_user(const char *id, uint8_t *ext_idx);
+error_t find_user(const char *id, int8_t *ext_idx);
 error_t get_user_name(char *dest, size_t len, int8_t idx);
 
 #endif

@@ -20,7 +20,7 @@ int main(void) {
 
     loop {
         if (data_ready) {
-            uint8_t user_idx;
+            int8_t user_idx;
             find_user((const char *)rx_buffer, &user_idx);
 
             if (user_idx != -1) {

@@ -4,4 +4,7 @@ avr
 -isystem
 /usr/avr/include
 -D__AVR_ATmega2560__
+-DF_CPU=8000000UL
 -Os
+-Isrc
+-Ilib
