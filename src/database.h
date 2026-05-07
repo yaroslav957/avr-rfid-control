@@ -8,21 +8,19 @@
 #include <blake2s/blake2s.h>
 
 #include <stdint.h>
+#include <string.h>
 
 #define MAGIC 0xDB
 
 #define INIT_USERS 5
 #define MAX_USERS 16
 
-#define HASH_LEN 32
-#define NAME_DATA_LEN 12
+#define RDM6300_RFID_LEN 11
+#define NAME_DATA_LEN 15
 #define NAME_LEN (NAME_DATA_LEN + 1)
 
-typedef const uint8_t *EEP_BYTE_P;
-typedef const void *EEP_VOID_P;
-
 typedef struct {
-    uint8_t hash_id[HASH_LEN];
+    uint8_t hash[BLAKE2S_OUTLEN];
     char name[NAME_LEN];
 } User;
 

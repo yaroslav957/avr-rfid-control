@@ -31,7 +31,7 @@ extern "C" {
 #define BLAKE2S_OUTLEN                                                         \
     (32) // Length of digest (32 is the secure/maximum/standard length)
 #define BLAKE2S_STREAM                                                         \
-    (0) // When disabled, inputs must be aligned to BLAKE2S_BLOCKBYTES and not
+    (1) // When disabled, inputs must be aligned to BLAKE2S_BLOCKBYTES and not
         // be zero length
 #define BLAKE2S_ERRCHECK (0)  // Enable error checking
 #define BLAKE2S_UNALIGNED (0) // Unaligned inputs are accepted.
