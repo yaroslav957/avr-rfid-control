@@ -1,9 +1,9 @@
 -target
 avr
--mmcu=atmega2560
+-mmcu=atmega32
 -isystem
 /usr/avr/include
--D__AVR_ATmega2560__
+-D__AVR_ATmega32__
 -DF_CPU=8000000UL
 -Os
 -Isrc

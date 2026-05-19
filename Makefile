@@ -1,4 +1,4 @@
-MCU = atmega2560
+MCU = atmega32
 F_CPU = 8000000UL
 CC = avr-gcc
 

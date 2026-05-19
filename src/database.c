@@ -1,10 +1,12 @@
 #include "database.h"
+#include "error.h"
 
-const User PROGMEM INIT[INIT_USERS] = {
-    {{0x36, 0x9d, 0x27, 0x0b, 0x22, 0x97, 0x1d, 0x73, 0xd5, 0xc2, 0xba,
-      0x4e, 0x95, 0x6a, 0x9f, 0x02, 0x11, 0x0e, 0x56, 0x91, 0x7e, 0x11,
-      0x83, 0x3e, 0x61, 0xb7, 0x0e, 0x97, 0x33, 0x4a, 0x6d, 0x20},
-     "Admin"}};
+const User PROGMEM __INIT[INIT_USERS] = {
+    // "1234567890"
+    {.hash = {0x36, 0x9d, 0x27, 0x0b, 0x22, 0x97, 0x1d, 0x73, 0xd5, 0xc2, 0xba,
+              0x4e, 0x95, 0x6a, 0x9f, 0x02, 0x11, 0x0e, 0x56, 0x91, 0x7e, 0x11,
+              0x83, 0x3e, 0x61, 0xb7, 0x0e, 0x97, 0x33, 0x4a, 0x6d, 0x20},
+     .name = "Admin"}};
 
 uint8_t EEMEM ee_status;
 User EEMEM database[MAX_USERS];
@@ -18,11 +20,16 @@ void eeprom_db_init(void) {
 
     for (uint8_t i = 0; i < INIT_USERS; i++) {
         User user;
-        memcpy_P(&user, &INIT[i], sizeof(User));
+        memcpy_P(&user, &__INIT[i], sizeof(User));
         eeprom_write_block(&user, &database[i], sizeof(User));
     }
 
     eeprom_update_byte(&ee_status, MAGIC);
+}
+
+error_t add_user(const char *id, char name[NAME_LEN]) {
+    ;
+    return ERR_NONE;
 }
 
 error_t find_user(const char *id, int8_t *ext_idx) {
@@ -54,7 +61,7 @@ error_t get_user_name(char *dest, size_t len, int8_t idx) {
         return ERR_SMALLBUF;
 
     if (idx < 0 || idx >= MAX_USERS)
-        return ERR_GENERIC;
+        return ERR_INVALIDX;
 
     size_t n = (len < NAME_LEN) ? (len - 1) : (NAME_LEN - 1);
     eeprom_read_block((void *)dest, &database[idx].name, n);

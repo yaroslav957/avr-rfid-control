@@ -15,7 +15,7 @@
 #define INIT_USERS 5
 #define MAX_USERS 16
 
-#define RDM6300_RFID_LEN 11
+#define RDM6300_RFID_LEN 10
 #define NAME_DATA_LEN 15
 #define NAME_LEN (NAME_DATA_LEN + 1)
 
@@ -26,6 +26,7 @@ typedef struct {
 
 void eeprom_db_init(void);
 error_t find_user(const char *id, int8_t *ext_idx);
+error_t add_user(const char *id, char name[NAME_LEN]);
 error_t get_user_name(char *dest, size_t len, int8_t idx);
 
 #endif
