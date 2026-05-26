@@ -14,7 +14,7 @@ int main(void) {
     cli();
 
     uart_init(9600);
-    buzzer_init(1000);
+    buzzer_init();
     eeprom_db_init();
 
     sei();
