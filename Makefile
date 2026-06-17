@@ -19,8 +19,5 @@ all: $(TARGET)
 $(TARGET): $(SRCS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS)
 
-run: all
-	qemu-system-avr -machine mega2560 -bios $(TARGET) -nographic
-
 clean:
 	rm -f $(TARGET)

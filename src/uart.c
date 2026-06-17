@@ -1,6 +1,7 @@
 #include "uart.h"
+#include <stdint.h>
 
-volatile char rx_buf[BUF_SIZE];
+volatile uint8_t rx_buf[BUF_SIZE];
 volatile uint8_t buf_ready = 0;
 volatile uint8_t rx_idx = 0;
 
@@ -15,7 +16,7 @@ void uart_init(uint32_t baud) {
 }
 
 ISR(USART_RXC_vect) {
-    char received = UART_DATA;
+    uint8_t received = UART_DATA;
 
     if (received == 0x02) {
         rx_idx = 0;

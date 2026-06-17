@@ -2,7 +2,6 @@
 #define BUZZER_H
 
 #include <avr/io.h>
-#include <util/delay.h>
 
 #define F_BUZZER 3000U
 #define HALF_PERIOD 166

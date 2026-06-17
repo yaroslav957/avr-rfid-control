@@ -1,5 +1,7 @@
 #include "buzzer.h"
 
+#include <util/delay.h>
+
 void buzzer_init(void) { BUZZER_DDR |= (1 << BUZZER_PIN); }
 
 void buzzer_beep(void) {

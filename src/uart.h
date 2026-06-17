@@ -3,9 +3,10 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <stdint.h>
 
 #define F_CPU 8000000UL
-#define BUF_SIZE 20
+#define BUF_SIZE 10
 
 #define UART_STATUS UCSRA
 #define UART_CONTROL UCSRB
@@ -23,7 +24,7 @@
 
 void uart_init(uint32_t baud);
 
-extern volatile char rx_buf[];
+extern volatile uint8_t rx_buf[];
 extern volatile uint8_t buf_ready;
 extern volatile uint8_t rx_idx;
 

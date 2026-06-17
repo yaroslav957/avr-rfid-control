@@ -3,16 +3,13 @@
 
 #include "error.h"
 
-#include <avr/eeprom.h>
-#include <avr/pgmspace.h>
 #include <blake2s/blake2s.h>
 
-#include <stdint.h>
-#include <string.h>
+#include <stddef.h>
 
 #define MAGIC 0xDB
 
-#define INIT_USERS 5
+#define INIT_USERS 1
 #define MAX_USERS 16
 
 #define RDM6300_RFID_LEN 10
@@ -25,8 +22,10 @@ typedef struct {
 } User;
 
 void eeprom_db_init(void);
-error_t find_user(const char *id, int8_t *ext_idx);
-error_t add_user(const char *id, char name[NAME_LEN]);
+void eeprom_db_erase(void);
+
+error_t find_user(const uint8_t *id, int8_t *ext_idx);
+error_t add_user(const uint8_t *id, const char name[NAME_LEN]);
 error_t get_user_name(char *dest, size_t len, int8_t idx);
 
 #endif
