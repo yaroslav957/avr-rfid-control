@@ -22,10 +22,10 @@ typedef struct {
     char name[NAME_LEN];
 } User;
 
-void eeprom_db_init(void);
-void eeprom_db_erase(void);
-error_t find_user(const uint8_t *id, int8_t *ext_idx);
-error_t add_user(const uint8_t *id, const char name[NAME_LEN]);
-error_t get_user_name(char *dest, size_t len, int8_t idx);
+void database_init(void);
+void database_erase(void);
+error_t database_find_user(const uint8_t *id, int8_t *ext_idx);
+error_t database_add_user(const uint8_t *id, const char name[NAME_LEN]);
+error_t database_get_user_name(char *dest, size_t len, int8_t idx);
 
 #endif

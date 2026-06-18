@@ -6,7 +6,6 @@
 
 #include <avr/interrupt.h>
 
-#include <stdbool.h>
 #include <stdint.h>
 
 void wait(uint32_t ticks);
@@ -16,11 +15,11 @@ int main(void) {
 
     uart_init(9600);
     buzzer_init();
-    eeprom_db_init();
+    database_init();
 
     sei();
 
-    while (true) {
+    while (1) {
         wait(5);
     }
 }

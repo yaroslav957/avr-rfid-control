@@ -20,7 +20,7 @@ const User PROGMEM init_database[INIT_USERS] = {
 uint8_t EEMEM ee_status;
 User EEMEM database[MAX_USERS];
 
-void eeprom_db_init(void) {
+void database_init(void) {
     uint8_t flag;
     flag = eeprom_read_byte(&ee_status);
 
@@ -36,7 +36,7 @@ void eeprom_db_init(void) {
     eeprom_update_byte(&ee_status, MAGIC);
 }
 
-void eeprom_db_erase(void) {
+void database_erase(void) {
     User user = {0};
 
     eeprom_update_byte(&ee_status, 0xFF);
@@ -45,39 +45,48 @@ void eeprom_db_erase(void) {
     }
 }
 
-error_t add_user(const uint8_t *id, const char name[NAME_LEN]) {
+error_t database_add_user(const uint8_t *id, const char name[NAME_LEN]) {
     REQUIRE_NON_NULL(id);
     REQUIRE_NON_NULL(name);
 
     User user;
-    int8_t idx = -1;
+    int8_t free_idx = -1;
+
     uint8_t tg_hash_buf[BLAKE2S_OUTLEN];
     uint8_t db_hash_buf[BLAKE2S_OUTLEN];
 
+    uint8_t empty_zero[BLAKE2S_OUTLEN] = {0};
+    uint8_t empty_ff[BLAKE2S_OUTLEN];
+
+    memset(empty_ff, 0xFF, BLAKE2S_OUTLEN);
     blake2s(tg_hash_buf, id, RDM6300_RFID_LEN);
 
     for (uint8_t i = 0; i < MAX_USERS; i++) {
         eeprom_read_block(db_hash_buf, &database[i].hash, BLAKE2S_OUTLEN);
+
         if (memcmp(tg_hash_buf, db_hash_buf, BLAKE2S_OUTLEN) == 0) {
             return ERR_USER_ALREADY_EXISTS;
         }
 
-        if (idx == -1 && db_hash_buf[0] == 0x00) {
-            idx = i;
+        if (free_idx == -1) {
+            if (memcmp(db_hash_buf, empty_zero, BLAKE2S_OUTLEN) == 0 ||
+                memcmp(db_hash_buf, empty_ff, BLAKE2S_OUTLEN) == 0) {
+                free_idx = i;
+            }
         }
     }
 
-    REQUIRE(idx == -1, ERR_USER_DATABASE_IS_FULL);
+    REQUIRE(free_idx != -1, ERR_USER_DATABASE_IS_FULL);
 
     memcpy(user.hash, tg_hash_buf, BLAKE2S_OUTLEN);
     strncpy(user.name, name, NAME_DATA_LEN);
     user.name[NAME_DATA_LEN] = '\0';
-    eeprom_update_block(&user, &database[idx], sizeof(User));
+    eeprom_update_block(&user, &database[free_idx], sizeof(User));
 
     return ERR_NONE;
 }
 
-error_t find_user(const uint8_t *id, int8_t *ext_idx) {
+error_t database_find_user(const uint8_t *id, int8_t *ext_idx) {
     REQUIRE_NON_NULL(id);
     REQUIRE_NON_NULL(ext_idx);
 
@@ -98,7 +107,7 @@ error_t find_user(const uint8_t *id, int8_t *ext_idx) {
     return ERR_USER_NOT_FOUND;
 }
 
-error_t get_user_name(char *dest, size_t len, int8_t idx) {
+error_t databse_get_user_name(char *dest, size_t len, int8_t idx) {
     REQUIRE_NON_NULL(dest);
     REQUIRE(len > 2, ERR_SMALL_BUF);
     REQUIRE(idx > 0 && idx <= MAX_USERS, ERR_INVALID_IDX);
