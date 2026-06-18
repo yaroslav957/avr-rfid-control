@@ -2,11 +2,12 @@
 
 #include "buzzer.h"
 #include "database.h"
-#include "uart.h"
+#include "usart.h"
+
+#include <avr/interrupt.h>
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 void wait(uint32_t ticks);
 
@@ -22,8 +23,6 @@ int main(void) {
     while (true) {
         wait(5);
     }
-
-    return EXIT_SUCCESS;
 }
 
 void wait(uint32_t ticks) {

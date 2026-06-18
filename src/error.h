@@ -6,6 +6,7 @@ typedef enum {
 
     ERR_NULL_PTR,
     ERR_SMALL_BUF,
+    ERR_BUF_IS_BUSY,
     ERR_INVALID_IDX,
 
     ERR_USER_NOT_FOUND,
@@ -13,12 +14,14 @@ typedef enum {
     ERR_USER_DATABASE_IS_FULL,
 } __attribute__((packed)) error_t;
 
-#define RETURN_IF_NULL(ptr)                                                    \
+#define REQUIRE(cond, err_code)                                                \
     do {                                                                       \
-        if ((ptr) == NULL) {                                                   \
-            return ERR_NULL_PTR;                                               \
+        if (!(cond)) {                                                         \
+            return (err_code);                                                 \
         }                                                                      \
     } while (0)
+
+#define REQUIRE_NON_NULL(ptr) REQUIRE((ptr) != NULL, ERR_NULL_PTR)
 
 const char *err_name(error_t err_code);
 
