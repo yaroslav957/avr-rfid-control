@@ -5,6 +5,7 @@
 
 #include <avr/io.h>
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define F_CPU 8000000UL
@@ -30,7 +31,7 @@
 
 void uart_init(uint32_t baud);
 void uart_buf_clear(void);
-error_t uart_buf_ready(void);
+bool uart_buf_ready(void);
 error_t uart_buf_get_id(char *dest);
 
 #endif

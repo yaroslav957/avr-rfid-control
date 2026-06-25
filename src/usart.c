@@ -28,17 +28,17 @@ void uart_buf_clear(void) {
     SREG = sreg;
 }
 
-error_t uart_buf_ready(void) {
-    REQUIRE(rx_ready == 1, ERR_BUF_IS_BUSY);
+bool uart_buf_ready(void) {
+    REQUIRE(rx_ready == 1, false);
 
-    return ERR_NONE;
+    return true;
 }
 
 error_t uart_buf_get_id(char *dest) {
     REQUIRE_NON_NULL(dest);
     REQUIRE(rx_ready, ERR_BUF_IS_BUSY);
 
-    memcpy(dest, (const char *)rx_buf, 10);
+    memcpy(dest, (const char *)rx_buf, PACKET_LEN - 2);
     dest[10] = '\0';
 
     return ERR_NONE;
