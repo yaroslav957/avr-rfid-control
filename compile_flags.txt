@@ -8,3 +8,7 @@ avr
 -Os
 -Isrc
 -Ilib
+-Ilib/blake2s
+-std=c17
+-Wall
+-Wextra

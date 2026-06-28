@@ -25,7 +25,7 @@ typedef struct {
 void database_init(void);
 void database_erase(void);
 error_t database_find_user(const uint8_t *id, int8_t *ext_idx);
-error_t database_add_user(const uint8_t *id, const char name[NAME_LEN]);
+error_t database_add_user(const uint8_t *id, const char name[static NAME_LEN]);
 error_t database_get_user_name(char *dest, size_t len, int8_t idx);
 
 #endif

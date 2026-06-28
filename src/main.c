@@ -6,10 +6,6 @@
 
 #include <avr/interrupt.h>
 
-#include <stdint.h>
-
-void wait(uint32_t ticks);
-
 int main(void) {
     cli();
 
@@ -20,12 +16,5 @@ int main(void) {
     sei();
 
     while (1) {
-        wait(5);
-    }
-}
-
-void wait(uint32_t ticks) {
-    for (int32_t i = 0; i < ticks; i++) {
-        asm volatile("nop");
     }
 }
