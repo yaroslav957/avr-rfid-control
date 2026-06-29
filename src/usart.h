@@ -4,14 +4,14 @@
 #include "error.h"
 
 #include <avr/io.h>
-
 #include <stdbool.h>
 #include <stdint.h>
 
 #define F_CPU 8000000UL
 
 #define PACKET_LEN 12
-#define PACKET_BUF_LEN (PACKET_LEN + 1)
+#define PACKET_ID_LEN 10
+#define PACKET_BUF_LEN 11
 #define PACKET_START 0x02
 #define PACKET_STOP 0x03
 
@@ -29,9 +29,9 @@
 #define USART_BIT_SZ1 (1 << UCSZ1)
 #define USART_SEL_REG (1 << URSEL)
 
-void uart_init(uint32_t baud);
-void uart_buf_clear(void);
-bool uart_buf_ready(void);
-error_t uart_buf_get_id(char *dest);
+void usart_init(uint32_t baud);
+void usart_buf_clear(void);
+bool usart_buf_ready(void);
+error_t usart_buf_get_id(uint8_t *restrict dest);
 
 #endif

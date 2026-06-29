@@ -4,11 +4,12 @@
 #include "error.h"
 
 #include <blake2s/blake2s.h>
-
 #include <stddef.h>
 #include <stdint.h>
 
 #define MAGIC 0xDB
+#define EE_ZERO 0x00
+#define EE_EMPTY 0xFF
 
 #define INIT_USERS 1
 #define MAX_USERS 16

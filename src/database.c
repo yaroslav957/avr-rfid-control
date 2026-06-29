@@ -52,7 +52,7 @@ void database_erase(void) {
     }
 }
 
-error_t database_add_user(const uint8_t *id, const char name[NAME_LEN]) {
+error_t database_add_user(const uint8_t *id, const char name[static NAME_LEN]) {
     REQUIRE_NON_NULL(id);
 
     int8_t free_idx = -1;
@@ -71,11 +71,11 @@ error_t database_add_user(const uint8_t *id, const char name[NAME_LEN]) {
                 match = false;
             }
 
-            if (val != 0x00) {
+            if (val != EE_ZERO) {
                 zero = false;
             }
 
-            if (val != 0xFF) {
+            if (val != EE_EMPTY) {
                 ff = false;
             }
         }
@@ -131,7 +131,7 @@ error_t database_find_user(const uint8_t *id, int8_t *ext_idx) {
 error_t database_get_user_name(char *dest, size_t len, int8_t idx) {
     REQUIRE_NON_NULL(dest);
     REQUIRE(len > 2, ERR_SMALL_BUF);
-    REQUIRE(idx >= 0 && idx < MAX_USERS, ERR_INVALID_IDX);
+    REQUIRE(idx >= 0 && idx < MAX_USERS, ERR_INVALID_INDEX);
 
     size_t n = (len < NAME_LEN) ? (len - 1) : (NAME_DATA_LEN);
 

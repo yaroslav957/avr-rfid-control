@@ -3,18 +3,20 @@
 #include "buzzer.h"
 #include "database.h"
 #include "usart.h"
+#include "utils.h"
 
 #include <avr/interrupt.h>
 
 int main(void) {
     cli();
 
-    uart_init(9600);
+    usart_init(9600);
     buzzer_init();
     database_init();
 
     sei();
 
     while (1) {
+        wait(5);
     }
 }

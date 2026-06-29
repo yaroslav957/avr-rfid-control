@@ -1,25 +1,29 @@
 #include "error.h"
 #include "usart.h"
 
+#include <assert.h>
 #include <avr/interrupt.h>
+#include <stdint.h>
 
-#include <string.h>
+static_assert(PACKET_LEN == 12,
+              "RDM6300 packet requires 10 data bytes + 2 checksum");
 
 static volatile uint8_t rx_idx = 0;
 static volatile uint8_t rx_ready = 0;
 static volatile uint8_t rx_buf[PACKET_BUF_LEN];
 
-void uart_init(uint32_t baud) {
-    uint16_t ubrr_value = (F_CPU / (16UL * baud)) - 1;
+void usart_init(uint32_t baud) {
+    const uint16_t ubrr_value = (uint16_t)((F_CPU / (16UL * baud)) - 1);
 
-    USART_BAUD_H = (uint8_t)(ubrr_value >> 8);
+    USART_BAUD_H = (uint8_t)((ubrr_value >> 8) & 0x0F);
     USART_BAUD_L = (uint8_t)ubrr_value;
+
     USART_CONTROL = USART_RXCIE | USART_RXEN | USART_TXEN;
     USART_CONFIG = USART_SEL_REG | USART_BIT_SZ1 | USART_BIT_SZ0;
 }
 
-void uart_buf_clear(void) {
-    uint8_t sreg = SREG;
+void usart_buf_clear(void) {
+    const uint8_t sreg = SREG;
 
     cli();
 
@@ -28,40 +32,46 @@ void uart_buf_clear(void) {
     SREG = sreg;
 }
 
-bool uart_buf_ready(void) {
-    REQUIRE(rx_ready == 1, false);
+bool usart_buf_ready(void) { return (rx_ready == 1); }
 
-    return true;
-}
-
-error_t uart_buf_get_id(char *dest) {
+error_t usart_buf_get_id(uint8_t *restrict dest) {
     REQUIRE_NON_NULL(dest);
     REQUIRE(rx_ready, ERR_BUF_IS_BUSY);
 
-    memcpy(dest, (const char *)rx_buf, PACKET_LEN - 2);
-    dest[10] = '\0';
+    for (uint16_t i = 0; i < PACKET_ID_LEN; i++) {
+        dest[i] = rx_buf[i];
+    }
+
+    dest[PACKET_ID_LEN] = '\0';
 
     return ERR_NONE;
 }
 
 ISR(USART_RXC_vect) {
-    unsigned char received = USART_DATA;
+    uint8_t idx = rx_idx;
+    const uint8_t received = USART_DATA;
 
     if (rx_ready)
         return;
 
     if (received == PACKET_START) {
-        rx_idx = 0;
+        idx = 0;
     } else if (received == PACKET_STOP) {
-        if (rx_idx == PACKET_LEN) {
-            rx_buf[rx_idx] = '\0';
+        if (idx == PACKET_LEN) {
+            rx_buf[PACKET_ID_LEN] = '\0';
             rx_ready = 1;
-        } else {
-            rx_idx = 0;
         }
+
+        idx = 0;
     } else {
-        if (rx_idx < PACKET_LEN) {
-            rx_buf[rx_idx++] = received;
+        if (idx < PACKET_ID_LEN) {
+            rx_buf[idx] = received;
+        }
+
+        if (idx < PACKET_LEN) {
+            idx++;
         }
     }
+
+    rx_idx = idx;
 }
