@@ -3,7 +3,6 @@
 
 #include <assert.h>
 #include <avr/interrupt.h>
-#include <stdint.h>
 
 static_assert(PACKET_LEN == 12,
               "RDM6300 packet requires 10 data bytes + 2 checksum");
@@ -32,6 +31,18 @@ void usart_buf_clear(void) {
     SREG = sreg;
 }
 
+/* without inline :(
+ *
+ * usart_buf_ready:
+ * .L__stack_usage = 0
+ *      lds r25,rx_ready
+ *      ldi r24,lo8(1)
+ *      cpi r25,lo8(1)
+ *      breq .L2
+ *      ldi r24,0
+ * .L2:
+ *      ret
+ */
 bool usart_buf_ready(void) { return (rx_ready == 1); }
 
 error_t usart_buf_get_id(uint8_t *restrict dest) {

@@ -1,25 +1,24 @@
 #include "database.h"
 #include "error.h"
 
+#include <assert.h>
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
-
-#include <assert.h>
 #include <stdbool.h>
 #include <string.h>
 
 static_assert(INIT_USERS <= MAX_USERS,
               "Flash database can't be bigger than EEPROM");
 
-const User PROGMEM init_database[INIT_USERS] = {
+static const User PROGMEM init_database[INIT_USERS] = {
     {.hash = {0x84, 0xE5, 0xA2, 0x9B, 0x07, 0x1D, 0x8C, 0x67, 0x5D, 0x2A, 0x11,
               0xEB, 0xEE, 0x22, 0x53, 0x13, 0x6A, 0x74, 0x26, 0x5A, 0xE4, 0x00,
               0x5A, 0x3D, 0xD6, 0x4F, 0xAE, 0x0E, 0x4A, 0xBC, 0xEF, 0x98},
      .name = "Admin"},
 };
 
-uint8_t EEMEM ee_status;
-User EEMEM database[MAX_USERS];
+static uint8_t EEMEM ee_status;
+static User EEMEM database[MAX_USERS];
 
 void database_init(void) {
     uint8_t flag;
@@ -44,11 +43,12 @@ void database_init(void) {
 }
 
 void database_erase(void) {
-    eeprom_update_byte(&ee_status, 0xFF);
+    eeprom_update_byte(&ee_status, EE_EMPTY);
 
-    static const User user = {0};
-    for (uint16_t i = 0; i < MAX_USERS; i++) {
-        eeprom_update_block(&user, &database[i], sizeof(User));
+    for (uint8_t i = 0; i < MAX_USERS; i++) {
+        for (uint8_t j = 0; j < BLAKE2S_OUTLEN; j++) {
+            eeprom_update_byte((uint8_t *)&database[i].hash[j], EE_EMPTY);
+        }
     }
 }
 
@@ -61,7 +61,7 @@ error_t database_add_user(const uint8_t *id, const char name[static NAME_LEN]) {
     blake2s(tg_hash_buf, id, RDM6300_RFID_LEN);
 
     for (uint16_t i = 0; i < MAX_USERS; i++) {
-        bool match = true, zero = true, ff = true;
+        bool match = true, empty = true;
 
         for (uint16_t j = 0; j < BLAKE2S_OUTLEN; j++) {
             uint8_t val;
@@ -71,18 +71,18 @@ error_t database_add_user(const uint8_t *id, const char name[static NAME_LEN]) {
                 match = false;
             }
 
-            if (val != EE_ZERO) {
-                zero = false;
+            if (val != EE_EMPTY) {
+                empty = false;
             }
 
-            if (val != EE_EMPTY) {
-                ff = false;
+            if (!match && !empty) {
+                break;
             }
         }
 
         REQUIRE(!match, ERR_USER_ALREADY_EXISTS);
 
-        if (free_idx == -1 && (zero || ff)) {
+        if (free_idx == -1 && empty) {
             free_idx = (int8_t)i;
         }
     }
