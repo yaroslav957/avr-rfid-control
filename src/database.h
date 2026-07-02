@@ -3,7 +3,7 @@
 
 #include "error.h"
 
-#include <blake2s/blake2s.h>
+#include <blake2s.h>
 #include <stdint.h>
 
 #define MAGIC 0xDB

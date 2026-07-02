@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define F_CPU 8000000UL
+#define BAUD 9600
 
 #define PACKET_LEN 12
 #define PACKET_ID_LEN 10
@@ -29,7 +29,7 @@
 #define USART_BIT_SZ1 (1 << UCSZ1)
 #define USART_SEL_REG (1 << URSEL)
 
-void usart_init(uint32_t baud);
+void usart_init();
 void usart_buf_clear(void);
 bool usart_buf_ready(void);
 error_t usart_buf_get_id(uint8_t *restrict dest);

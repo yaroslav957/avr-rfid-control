@@ -8,7 +8,7 @@
 
 #define BUZZER_DDR DDRB
 #define BUZZER_PORT PORTB
-#define BUZZER_PIN PB1
+#define BUZZER_PIN (1 << PB1)
 
 void buzzer_init(void);
 void buzzer_beep(void);

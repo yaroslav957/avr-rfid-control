@@ -11,8 +11,8 @@ static volatile uint8_t rx_idx = 0;
 static volatile uint8_t rx_ready = 0;
 static volatile uint8_t rx_buf[PACKET_BUF_LEN];
 
-void usart_init(uint32_t baud) {
-    const uint16_t ubrr_value = (uint16_t)((F_CPU / (16UL * baud)) - 1);
+void usart_init(void) {
+    const uint16_t ubrr_value = (uint16_t)((F_CPU / (16UL * BAUD)) - 1);
 
     USART_BAUD_H = (uint8_t)((ubrr_value >> 8) & 0x0F);
     USART_BAUD_L = (uint8_t)ubrr_value;

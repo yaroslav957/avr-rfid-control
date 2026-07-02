@@ -45,8 +45,8 @@ void database_init(void) {
 void database_erase(void) {
     eeprom_update_byte(&ee_status, EE_EMPTY);
 
-    for (uint8_t i = 0; i < MAX_USERS; i++) {
-        for (uint8_t j = 0; j < BLAKE2S_OUTLEN; j++) {
+    for (uint16_t i = 0; i < MAX_USERS; i++) {
+        for (uint16_t j = 0; j < BLAKE2S_OUTLEN; j++) {
             eeprom_update_byte((uint8_t *)&database[i].hash[j], EE_EMPTY);
         }
     }
