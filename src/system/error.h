@@ -14,6 +14,7 @@ typedef enum {
     ERR_USER_DATABASE_IS_FULL,
 } __attribute__((packed)) error_t;
 
+#define OK(cond) ((cond) == ERR_NONE)
 #define REQUIRE(cond, err_code)                                                \
     do {                                                                       \
         if (!(cond)) {                                                         \

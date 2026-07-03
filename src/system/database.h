@@ -1,7 +1,7 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include "error.h"
+#include "system/error.h"
 
 #include <blake2s.h>
 #include <stdint.h>

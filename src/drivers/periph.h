@@ -2,6 +2,7 @@
 #define PERIPH_H
 
 #include <avr/io.h>
+#include <stdint.h>
 
 #define ALL_LOW 0x00
 #define ALL_OUT 0xFF
@@ -27,11 +28,17 @@
 
 #define ADC_MUX ADMUX
 #define ADC_CONTROL ADCSRA
+#define ADC_DATA ADC
 #define ADC_AREF 0x00
+#define ADC_CHANNEL_0 0x00
+#define ADC_CHANNEL_1 0x01
 #define ADC_ENABLE (1 << ADEN)
+#define ADC_START (1 << ADSC)
 #define ADC_PRESC_32 ((1 << ADPS2) | (1 << ADPS0))
 
 void gpio_init(void);
 void adc_init(void);
+void adc_update_pos(void);
+void adc_read_pos(uint16_t *ext_x, uint16_t *ext_y);
 
 #endif

@@ -1,4 +1,3 @@
-#include "error.h"
 #include "usart.h"
 
 #include <assert.h>

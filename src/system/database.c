@@ -1,5 +1,4 @@
 #include "database.h"
-#include "error.h"
 
 #include <assert.h>
 #include <avr/eeprom.h>

@@ -1,9 +1,9 @@
+#include "drivers/periph.h"
 #include "timers.h"
 
 #include <avr/interrupt.h>
 
-static uint8_t cnt = 0;
-static void (*volatile callback)(void) = 0;
+static volatile uint8_t cnt = 0;
 
 void timer0_init(void) {
     TIMER0_COUNTER = 0;
@@ -20,12 +20,9 @@ void timer1_init(void) {
     TIMER1_CONTROL_B = TIMER1_PRESC_64;
 }
 
-void timer0_cb(void (*ext_cb)(void)) { callback = ext_cb; }
-
 ISR(TIMER0_COMP_vect) {
     if (++cnt >= TIMER0_DIVIDER) {
         cnt = 0;
-        if (callback)
-            callback();
+        adc_update_pos();
     }
 }

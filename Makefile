@@ -12,7 +12,15 @@ SRCDIR = src
 LIBDIR = lib
 BUILD_DIR = build
 
-INCLUDES  = -I$(SRCDIR)
+rwildcard = $(foreach d,$(wildcard $(1:=/*)), \
+		$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
+SRCS = $(call rwildcard,$(SRCDIR),*.c) \
+		$(call rwildcard,$(LIBDIR),*.c)
+OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(SRCS))
+DEPS = $(OBJS:.o=.d)
+
+INCLUDES = -I$(SRCDIR)
 INCLUDES += -I$(LIBDIR)
 INCLUDES += -isystem $(LIBDIR)/blake2s
 INCLUDES += -isystem $(LIBDIR)/glcd
@@ -33,31 +41,27 @@ LDFLAGS += -Wl,-Map=$(BUILD_DIR)/$(PROJECT).map
 LDFLAGS += -Wl,--gc-sections
 # LDFLAGS += -flto
 
-SRCS = $(wildcard $(SRCDIR)/*.c) \
-       $(wildcard $(LIBDIR)/*/*.c)
-OBJS = $(patsubst %.c, $(BUILD_DIR)/%.o, $(SRCS))
-DEPS = $(OBJS:.o=.d)
-
 .PHONY: all clean size flags build
 
-all: build size
+all: build
 build: $(BUILD_DIR)/$(PROJECT).elf $(BUILD_DIR)/$(PROJECT).hex
 
 $(BUILD_DIR)/$(PROJECT).elf: $(OBJS)
 	@mkdir -p $(dir $@)
-	$(CC) $(OBJS) $(LDFLAGS) -o $@
+	@echo "  LD   $@"
+	@$(CC) $(OBJS) $(LDFLAGS) -o $@
 
 $(BUILD_DIR)/$(PROJECT).hex: $(BUILD_DIR)/$(PROJECT).elf
-	$(OBJCOPY) -O ihex -R .eeprom $< $@
+	@echo "  HEX  $@"
+	@$(OBJCOPY) -O ihex -R .eeprom $< $@
 
 $(BUILD_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@echo "  CC   $<"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 size: $(BUILD_DIR)/$(PROJECT).elf
-	@echo ""
-	@echo "~~~ Static size analysis ~~~"
-	$(SIZE) -C --mcu=$(MCU) $<
+	@$(SIZE) -C --mcu=$(MCU) $<
 
 flags: compile_flags.txt
 compile_flags.txt: Makefile

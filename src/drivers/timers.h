@@ -27,6 +27,5 @@
 
 void timer0_init(void);
 void timer1_init(void);
-void timer0_cb(void (*ext_cb)(void));
 
 #endif

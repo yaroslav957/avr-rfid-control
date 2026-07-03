@@ -1,7 +1,7 @@
 #ifndef USART_H
 #define USART_H
 
-#include "error.h"
+#include "system/error.h"
 
 #include <avr/io.h>
 #include <stdbool.h>
@@ -29,7 +29,7 @@
 #define USART_BIT_SZ1 (1 << UCSZ1)
 #define USART_SEL_REG (1 << URSEL)
 
-void usart_init();
+void usart_init(void);
 void usart_buf_clear(void);
 bool usart_buf_ready(void);
 error_t usart_buf_get_id(uint8_t *restrict dest);
