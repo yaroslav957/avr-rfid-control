@@ -16,13 +16,11 @@
 #define IN_AREA(x, y, x0, x1)                                                  \
     (IN_RANGE(y, AREA_Y_MIN, AREA_Y_MAX) && IN_RANGE(x, x0, x1))
 
-volatile uint8_t is_adding = 0;
-volatile uint8_t is_key_held = 0;
-volatile uint8_t is_admin_mode = 0;
-volatile uint8_t is_user_found = 0;
-
 static char user_name[NAME_LEN];
-static const char new_name[NAME_LEN] = "NEW_USER";
+static volatile bool is_adding = false;
+static volatile bool is_key_held = false;
+static volatile bool is_admin_mode = false;
+static volatile bool is_user_found = false;
 
 int main(void) {
     cli();
@@ -54,32 +52,34 @@ int main(void) {
                     int8_t idx = -1;
 
                     if (OK(database_find_user(rfid, &idx)) && idx >= 0) {
-                        is_user_found = 1;
+                        is_user_found = true;
 
                         if (!OK(database_get_user_name(
                                 user_name, sizeof(user_name), idx))) {
-                            is_user_found = 0;
+                            is_user_found = false;
                         }
                     } else {
                         glcd_clear();
                         glcd_puts("Unknown RFID", 16, 3, 0, 1, 0);
                         buzzer_beep();
-                        is_admin_mode = 0;
-                        is_user_found = 0;
+                        is_admin_mode = false;
+                        is_user_found = false;
                     }
 
                     draw_main(is_user_found, user_name);
                 } else {
                     glcd_clear();
-                    if (OK(database_add_user(rfid, new_name))) {
+
+                    const static char default_name[NAME_LEN] = "NEW_USER";
+                    if (OK(database_add_user(rfid, default_name))) {
                         glcd_puts("User added", 24, 3, 0, 1, 0);
                     } else {
                         glcd_puts("User exists", 22, 3, 0, 1, 0);
                     }
 
-                    is_adding = 0;
-                    is_admin_mode = 0;
-                    is_user_found = 0;
+                    is_adding = false;
+                    is_admin_mode = false;
+                    is_user_found = false;
 
                     buzzer_beep();
                     draw_main(is_user_found, user_name);
@@ -94,33 +94,33 @@ int main(void) {
 
         if (is_key_held) {
             if (!IN_RANGE(y, AREA_Y_MIN, AREA_Y_MAX)) {
-                is_key_held = 0;
+                is_key_held = false;
             }
         } else if (IN_RANGE(y, AREA_Y_MIN, AREA_Y_MAX)) {
-            is_key_held = 1;
+            is_key_held = true;
 
-            if (is_admin_mode == 0) {
+            if (!is_admin_mode) {
                 if (is_user_found) {
-                    is_admin_mode = 1;
+                    is_admin_mode = true;
                     draw_admin();
                 }
             } else if (IN_RANGE(x, 30, 180)) {
                 glcd_puts("Erased   ", 10, 3, 0, 1, 0);
                 database_erase();
 
-                is_admin_mode = 0;
-                is_user_found = 0;
+                is_admin_mode = false;
+                is_user_found = false;
 
                 draw_main(is_user_found, user_name);
             } else if (IN_RANGE(x, 300, 480)) {
                 glcd_puts("Scan card", 10, 3, 0, 1, 0);
                 usart_buf_clear();
 
-                is_adding = 1;
+                is_adding = true;
             } else if (IN_RANGE(x, 580, 730)) {
-                is_admin_mode = 0;
-                is_user_found = 0;
-                is_adding = 0;
+                is_adding = false;
+                is_admin_mode = false;
+                is_user_found = false;
 
                 draw_main(is_user_found, user_name);
             }
