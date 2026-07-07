@@ -13,14 +13,12 @@
 #define AREA_Y_MIN 200
 #define AREA_Y_MAX 1023
 #define IN_RANGE(v, lo, hi) ((v) > (lo) && (v) < (hi))
-#define IN_AREA(x, y, x0, x1)                                                  \
-    (IN_RANGE(y, AREA_Y_MIN, AREA_Y_MAX) && IN_RANGE(x, x0, x1))
 
 static char user_name[NAME_LEN];
-static volatile bool is_adding = false;
-static volatile bool is_key_held = false;
-static volatile bool is_admin_mode = false;
-static volatile bool is_user_found = false;
+static bool is_adding = false;
+static bool is_key_held = false;
+static bool is_admin_mode = false;
+static bool is_user_found = false;
 
 int main(void) {
     cli();
@@ -70,8 +68,7 @@ int main(void) {
                 } else {
                     glcd_clear();
 
-                    const static char default_name[NAME_LEN] = "NEW_USER";
-                    if (OK(database_add_user(rfid, default_name))) {
+                    if (OK(database_add_user(rfid, "NEW_USER"))) {
                         glcd_puts("User added", 24, 3, 0, 1, 0);
                     } else {
                         glcd_puts("User exists", 22, 3, 0, 1, 0);

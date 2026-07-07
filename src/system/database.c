@@ -1,4 +1,5 @@
 #include "database.h"
+#include "system/error.h"
 
 #include <assert.h>
 #include <avr/eeprom.h>
@@ -51,8 +52,9 @@ void database_erase(void) {
     }
 }
 
-error_t database_add_user(const uint8_t *id, const char name[static NAME_LEN]) {
+error_t database_add_user(const uint8_t *id, const char *name) {
     REQUIRE_NON_NULL(id);
+    REQUIRE_NON_NULL(name);
 
     int8_t free_idx = -1;
     uint8_t tg_hash_buf[BLAKE2S_OUTLEN];

@@ -1,6 +1,8 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+#include <stddef.h>
+
 typedef enum {
     ERR_NONE = 0,
 
